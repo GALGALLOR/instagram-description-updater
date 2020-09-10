@@ -17,7 +17,7 @@ latest_video_text = "latest-video"
 latest_video_formatter = "   RedirectMatch 301 ^/{latest_video_text} {latest_video}\n"
 @app.route('/latest-video', methods=['GET'])
 def getLatestVideo():
-    url = f'https://www.googleapis.com/youtube/v3/search?order=date&part=snippet&channelId={channel_id}&maxResults=1&key={api_key}'
+    url = f'https://www.googleapis.com/youtube/v3/search?order=date&part=snippet&channelId={channel_id}&maxResults=10&key={api_key}'
     json_url = requests.get(url)
     data = json.loads(json_url.text)
     all_videos = data.get('items', {})
