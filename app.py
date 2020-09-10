@@ -1,17 +1,17 @@
 from flask import Flask
 from datetime import datetime
 import os
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 import requests
 import json
 from ftplib import FTP
 app = Flask(__name__)
-load_dotenv()
-api_key = os.getenv('YT_DATA_API_KEY')
-channel_id = os.getenv('CHANNEL_ID')
-user = os.getenv('USER')
-passwd= os.getenv('PASSWD')
-ip_address = os.getenv('IPADDRESS')
+# load_dotenv()
+api_key = os.environ['YT_DATA_API_KEY']
+channel_id = os.environ['CHANNEL_ID']
+user = os.environ['USER']
+passwd= os.environ['PASSWD']
+ip_address = os.environ['IPADDRESS']
 htaccess = ".htaccess"
 latest_video_text = "latest-video"
 latest_video_formatter = "   RedirectMatch 301 ^/{latest_video_text} {latest_video}\n"
