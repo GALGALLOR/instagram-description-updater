@@ -52,5 +52,6 @@ def updateHtaccess():
     return f"FAILURE: hmm what went wrong updating latest video to {latest_video} ....?"
 
 if __name__ == '__main__':
-    app.run(debug=True, use_reloader=True)
+    updateHtaccess()
+    # app.run(debug=True, use_reloader=True)
 

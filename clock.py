@@ -14,7 +14,6 @@ def disable_interval():
     sched.remove_job('INTERVAL_JOB')
 
 sched.start()
-print("Scheduler started")
 
 while __name__ == '__main__':
   pass
