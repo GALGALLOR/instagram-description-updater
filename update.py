@@ -5,6 +5,7 @@ import os
 import requests
 import json
 from ftplib import FTP
+
 app = Flask(__name__)
 # load_dotenv()
 api_key = os.environ['YT_DATA_API_KEY']
@@ -24,6 +25,7 @@ def getLatestVideo():
     video_id = all_videos[0].get('id', {}).get('videoId')
     lastest_video_url = f'https://www.youtube.com/watch?v={video_id}'
     return lastest_video_url
+
 @app.route('/update', methods=['GET'])
 def updateHtaccess():
     ftp = FTP(ip_address) 
@@ -35,7 +37,7 @@ def updateHtaccess():
     # load all lines into memory
     with open(htaccess) as file:
         lines = file.readlines()
-    # edit 
+    # edit the file to reflect the new video format
     with open(htaccess, "w") as file:
         for line in lines:
             if latest_video_text in line:
