@@ -14,10 +14,16 @@ user = os.environ['USER']
 passwd= os.environ['PASSWD']
 ip_address = os.environ['IPADDRESS']
 email_pwd = os.environ['EMAILPWD']
-email_user = "hello@yusuf.info"
+email_user = os.environ['EMAILUSER']
 htaccess = ".htaccess"
 latest_video_text = "latest-video"
 latest_video_formatter = "   RedirectMatch 301 ^/{latest_video_text} {latest_video}\n"
+
+class StatusCode:
+    SUCCESS = 1,
+    FAILURE = 2,
+    NOCHANGE = 3
+
 # @app.route('/latest-video', methods=['GET'])
 def getLatestVideo():
     url = f'https://www.googleapis.com/youtube/v3/search?order=date&part=snippet&channelId={channel_id}&maxResults=10&key={api_key}'
@@ -46,58 +52,57 @@ def updateHtaccess():
                 if latest_video not in line:
                     line = latest_video_formatter.format(latest_video_text=latest_video_text, latest_video=latest_video)
                 else:
-                    return f'SUCCESS latest video is already {latest_video}'
+                    return {
+                        'status': f'SUCCESS latest video is already {latest_video}',
+                        'code': StatusCode.NOCHANGE
+                    }
             file.write(line)
     response = ftp.storbinary(f'STOR {htaccess}', open(htaccess, 'rb'))
     if ("226" in response):
-        return f"SUCCESS changing latest video to {latest_video}"
-    return f"FAILURE: hmm what went wrong updating latest video to {latest_video} ....?"
+        return {
+            'status': f"SUCCESS changing latest video to {latest_video}",
+            'code': StatusCode.SUCCESS
+        }
+    return {
+        'status': f"FAILURE: hmm what went wrong updating latest video to {latest_video} ....?",
+        'code': StatusCode.FAILURE
+    }
 
-def run():
-    status = updateHtaccess()
-    SMTPserver = 'smtp.office365.com'
-    sender =     'hellO@yusuf.info'
-    destination = ['hellO@yusuf.info']
-    # typical values for text_subtype are plain, html, xml
-    text_subtype = 'plain'
+def send_mail(recipient):
 
-
-    content="""\
-    Test message
-    """
-
-    subject="Sent from Python"
-
-
-    # Send the mail
-    import sys
-    import os
-    import re
-
-    from smtplib import SMTP_SSL as SMTP       # this invokes the secure SMTP protocol (port 465, uses SSL)
-    # from smtplib import SMTP                  # use this for standard SMTP protocol   (port 25, no encryption)
-
-    # old version
-    # from email.MIMEText import MIMEText
+    import smtplib
     from email.mime.text import MIMEText
+    from email.mime.multipart import MIMEMultipart
+    resp = updateHtaccess()
+    
+    subject = 'PERSONAL - YouTube Description Updater'
+    if (resp['code'] is StatusCode.FAILURE):
+        subject = 'FAILURE - YouTube Descriptions Updater'
+
+    username = email_user
+    password = email_pwd
+
+    msg = MIMEMultipart()
+    msg['From'] = username
+    msg['To'] = recipient
+    msg['Subject'] = subject
+    msg.attach(MIMEText(resp['status']))
 
     try:
-        msg = MIMEText(content, text_subtype)
-        msg['Subject']=       subject
-        msg['From']   = sender # some SMTP servers will do this automatically, not all
+        print('sending mail to ' + recipient + ' with following subject: ' + subject)
+        mailServer = smtplib.SMTP('smtp-mail.outlook.com', 587)
+        mailServer.ehlo()
+        mailServer.starttls()
+        mailServer.ehlo()
+        mailServer.login(username, password)
+        mailServer.sendmail(username, recipient, msg.as_string())
+        mailServer.close()
 
-        conn = SMTP(SMTPserver)
-        conn.set_debuglevel(False)
-        conn.login(email_user, email_pwd)
-        try:
-            conn.sendmail(sender, destination, msg.as_string())
-        finally:
-            conn.quit()
+    except Exception as e:
+        print(str(e))
 
-    except:
-        sys.exit( "mail failed; %s" % "CUSTOM_ERROR" ) # give an error message
 
 if __name__ == '__main__':
-    run()
+    send_mail('hello@yusuf.info')
     # app.run(debug=True, use_reloader=True)
 
