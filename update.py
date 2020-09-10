@@ -13,6 +13,8 @@ channel_id = os.environ['CHANNEL_ID']
 user = os.environ['USER']
 passwd= os.environ['PASSWD']
 ip_address = os.environ['IPADDRESS']
+email_pwd = os.environ['EMAILPWD']
+email_user = "hello@yusuf.info"
 htaccess = ".htaccess"
 latest_video_text = "latest-video"
 latest_video_formatter = "   RedirectMatch 301 ^/{latest_video_text} {latest_video}\n"
@@ -53,24 +55,47 @@ def updateHtaccess():
 
 def run():
     status = updateHtaccess()
-    SERVER = "smtp.office365.com"
-    FROM = "hello@yusuf.info"
-    TO = ["hello@yusuf.info"] # must be a list
+    SMTPserver = 'smtp.office365.com'
+    sender =     'hellO@yusuf.info'
+    destination = ['hellO@yusuf.info']
+    # typical values for text_subtype are plain, html, xml
+    text_subtype = 'plain'
 
-    SUBJECT = "Alert"
-    TEXT = status
 
-    # Prepare actual message
-    message = """From: %s\r\nTo: %s\r\nSubject: %s\r\n\
+    content="""\
+    Test message
+    """
 
-    %s
-    """ % (FROM, ", ".join(TO), SUBJECT, TEXT)
+    subject="Sent from Python"
+
 
     # Send the mail
-    import smtplib
-    server = smtplib.SMTP(SERVER)
-    server.sendmail(FROM, TO, message)
-    server.quit()
+    import sys
+    import os
+    import re
+
+    from smtplib import SMTP_SSL as SMTP       # this invokes the secure SMTP protocol (port 465, uses SSL)
+    # from smtplib import SMTP                  # use this for standard SMTP protocol   (port 25, no encryption)
+
+    # old version
+    # from email.MIMEText import MIMEText
+    from email.mime.text import MIMEText
+
+    try:
+        msg = MIMEText(content, text_subtype)
+        msg['Subject']=       subject
+        msg['From']   = sender # some SMTP servers will do this automatically, not all
+
+        conn = SMTP(SMTPserver)
+        conn.set_debuglevel(False)
+        conn.login(email_user, email_pwd)
+        try:
+            conn.sendmail(sender, destination, msg.as_string())
+        finally:
+            conn.quit()
+
+    except:
+        sys.exit( "mail failed; %s" % "CUSTOM_ERROR" ) # give an error message
 
 if __name__ == '__main__':
     run()
