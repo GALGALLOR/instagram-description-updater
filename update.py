@@ -51,7 +51,28 @@ def updateHtaccess():
         return f"SUCCESS changing latest video to {latest_video}"
     return f"FAILURE: hmm what went wrong updating latest video to {latest_video} ....?"
 
+def run():
+    status = updateHtaccess()
+    SERVER = "smtp.office365.com"
+    FROM = "hello@yusuf.info"
+    TO = ["hello@yusuf.info"] # must be a list
+
+    SUBJECT = "Alert"
+    TEXT = status
+
+    # Prepare actual message
+    message = """From: %s\r\nTo: %s\r\nSubject: %s\r\n\
+
+    %s
+    """ % (FROM, ", ".join(TO), SUBJECT, TEXT)
+
+    # Send the mail
+    import smtplib
+    server = smtplib.SMTP(SERVER)
+    server.sendmail(FROM, TO, message)
+    server.quit()
+
 if __name__ == '__main__':
-    updateHtaccess()
+    run()
     # app.run(debug=True, use_reloader=True)
 
