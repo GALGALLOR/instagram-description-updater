@@ -6,7 +6,7 @@ import requests
 import json
 from ftplib import FTP
 
-app = Flask(__name__)
+# app = Flask(__name__)
 # load_dotenv()
 api_key = os.environ['YT_DATA_API_KEY']
 channel_id = os.environ['CHANNEL_ID']
@@ -16,7 +16,7 @@ ip_address = os.environ['IPADDRESS']
 htaccess = ".htaccess"
 latest_video_text = "latest-video"
 latest_video_formatter = "   RedirectMatch 301 ^/{latest_video_text} {latest_video}\n"
-@app.route('/latest-video', methods=['GET'])
+# @app.route('/latest-video', methods=['GET'])
 def getLatestVideo():
     url = f'https://www.googleapis.com/youtube/v3/search?order=date&part=snippet&channelId={channel_id}&maxResults=10&key={api_key}'
     json_url = requests.get(url)
@@ -26,7 +26,7 @@ def getLatestVideo():
     lastest_video_url = f'https://www.youtube.com/watch?v={video_id}'
     return lastest_video_url
 
-@app.route('/update', methods=['GET'])
+# @app.route('/update', methods=['GET'])
 def updateHtaccess():
     ftp = FTP(ip_address) 
     ftp.login(user=user, passwd=passwd)  
