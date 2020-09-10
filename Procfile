@@ -1,1 +1,1 @@
-clock: python scheduled.py
+clock: python clock.py
