@@ -21,6 +21,7 @@ def getLatestVideo():
     json_url = requests.get(url)
     data = json.loads(json_url.text)
     all_videos = data.get('items', {})
+    return all_videos
     video_id = all_videos[0].get('id', {}).get('videoId')
     lastest_video_url = f'https://www.youtube.com/watch?v={video_id}'
     return lastest_video_url
