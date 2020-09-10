@@ -5,7 +5,7 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 
 sched = BlockingScheduler()
 
-@sched.scheduled_job('cron', day_of_week='wed', hour=23)
+@sched.scheduled_job('cron', day_of_week='thu')
 def enable_interval():
     sched.add_job(update.updateHtaccess(), 'interval', minutes=1, id='INTERVAL_JOB')
 
@@ -14,7 +14,7 @@ def disable_interval():
     sched.remove_job('INTERVAL_JOB')
 
 sched.start()
-print "Scheduler started"
+print("Scheduler started")
 
 while __name__ == '__main__':
   pass
